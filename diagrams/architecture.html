@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Pipeline Architecture Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .diagram {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Financial Pipeline Architecture Diagram</h1>
+        <div class="diagram">
+            <pre class="mermaid">
+flowchart TB
+    %% Styling
+    classDef sourceSystem fill:#e1f5fe,stroke:#01579b
+    classDef processingSystem fill:#e8f5e9,stroke:#2e7d32
+    classDef storageSystem fill:#fff3e0,stroke:#ef6c00
+    classDef visualSystem fill:#f3e5f5,stroke:#7b1fa2
+
+    %% Data Sources and Generation
+    subgraph Sources["Data Generation"]
+        TG[/"Transaction Generator\n(Python Script)"/]:::sourceSystem
+    end
+
+    %% Stream Processing
+    subgraph Stream["Stream Processing"]
+        LS["Logstash\n(Data Collection)"]:::processingSystem
+        KF["Apache Kafka\n(Message Queue)"]:::processingSystem
+    end
+
+    %% Batch Processing
+    subgraph Batch["Batch Processing"]
+        AF["Apache Airflow\nDAG"]:::processingSystem
+        subgraph DAGTasks["DAG Tasks"]
+            direction TB
+            T1["Extract Data\n(from Elasticsearch)"]:::processingSystem
+            T2["Transform Data\n(Validation & Formatting)"]:::processingSystem
+            T3["Load Data\n(to PostgreSQL)"]:::processingSystem
+            T4["Cleanup\n(Delete from Elasticsearch)"]:::processingSystem
+            T1 --> T2 --> T3 --> T4
+        end
+    end
+
+    %% Storage Layer
+    subgraph Storage["Data Storage"]
+        ES["Elasticsearch\n(Short-term Storage)"]:::storageSystem
+        PG["PostgreSQL\n(Historical Data)"]:::storageSystem
+    end
+
+    %% Visualization Layer
+    subgraph Visualization["Data Visualization"]
+        KB["Kibana\n(Real-time Dashboards)"]:::visualSystem
+    end
+
+    %% Real-time Flow
+    TG -->|"Generate\nTransactions"| KF
+    KF -->|"Stream"| LS
+    LS -->|"Index"| ES
+    ES -->|"Real-time\nVisualization"| KB
+
+    %% Batch Flow
+    ES -->|"Extract"| AF
+    AF -->|"Store"| PG
+    PG -.->|"Historical\nQueries"| KB
+
+    %% Add notes
+    subgraph Legend["Data Flows"]
+        RTF["Real-time Flow"]
+        BFL["Batch Processing"]
+        style RTF fill:#e8f5e9,stroke:#2e7d32
+        style BFL fill:#fff3e0,stroke:#ef6c00
+    end
+</pre>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>

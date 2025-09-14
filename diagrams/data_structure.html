@@ -1,0 +1,49 @@
+classDiagram
+    TransaccionFinanciera -- TransaccionHistorica
+    TransaccionFinanciera -- ProductoFinanciero
+    TransaccionFinanciera -- AplicacionOrigen
+
+    class TransaccionFinanciera{
+      +String app
+      +String id_ordenante
+      +Number valor
+      +String producto
+      +String cuenta_ordenante
+      +String cuenta_beneficiario
+      +String detalle
+      +String timestamp
+      +String batch_date
+      +validate()
+      +toJSON()
+    }
+
+    class TransaccionHistorica{
+      +Number id
+      +String app
+      +String id_ordenante
+      +Number valor
+      +String producto
+      +String cuenta_ordenante
+      +String cuenta_beneficiario
+      +String detalle
+      +String timestamp
+      +String batch_date
+    }
+
+    class ProductoFinanciero{
+      <<enumeration>>
+      AHORROS
+      CORRIENTE
+      TARJETA_DEBITO
+      TARJETA_CREDITO
+      INVERSIONES
+    }
+
+    class AplicacionOrigen{
+      <<enumeration>>
+      BANCA_MOVIL
+      BANCA_WEB
+      CAJERO_AUTOMATICO
+      SUCURSAL_FISICA
+      OTRAS_APLICACIONES
+    }
